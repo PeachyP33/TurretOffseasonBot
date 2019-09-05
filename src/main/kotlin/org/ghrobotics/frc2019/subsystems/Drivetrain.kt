@@ -43,7 +43,7 @@ object Drivetrain : FalconWestCoastDrivetrain() {
 
     // Motors
     override val leftMotor: FalconMotor<Meter> = configureGearbox(kLeftMasterId, kLeftSlave1Id, setInverted = false)
-    override val rightMotor: FalconMotor<Meter> = configureGearbox(kLeftMasterId, kLeftSlave1Id, setInverted = true)
+    override val rightMotor: FalconMotor<Meter> = configureGearbox(kRightMasterId, kRightSlave1Id, setInverted = true)
     private val leftSlave1: FalconMotor<Meter> = TODO()
     private val rightSlave1: FalconMotor<Meter> = TODO()
 

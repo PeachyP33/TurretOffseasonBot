@@ -30,9 +30,6 @@ object Drivetrain : FalconWestCoastDrivetrain() {
     // Private member variables
     private val pigeon = PigeonIMU(kPigeonId)
 
-    // Public properties
-    val helper = this.driveHelper
-
     // Overriden variables
 
     // Motors

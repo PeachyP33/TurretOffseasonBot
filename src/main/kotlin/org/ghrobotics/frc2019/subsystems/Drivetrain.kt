@@ -81,7 +81,7 @@ object Drivetrain : FalconWestCoastDrivetrain() {
     private fun configureGearbox(masterId: Int, slaveId: Int, setInverted: Boolean): FalconMotor<Meter> {
         val masterMotor = FalconSRX(masterId, kDriveNativeUnitModel)
         val slaveMotor = FalconSRX(slaveId, kDriveNativeUnitModel)
-        return masterMotor
+        return slaveMotor
     }
 
 

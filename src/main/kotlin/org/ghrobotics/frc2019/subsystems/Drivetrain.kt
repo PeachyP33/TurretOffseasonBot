@@ -1,34 +1,54 @@
 package org.ghrobotics.frc2019.subsystems
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice
 import com.ctre.phoenix.sensors.PigeonIMU
+import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.geometry.Rotation2d
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry
 import org.ghrobotics.frc2019.commands.TeleopDriveCommand
 import org.ghrobotics.lib.mathematics.twodim.control.RamseteTracker
-import org.ghrobotics.lib.mathematics.units.Meter
-import org.ghrobotics.lib.mathematics.units.SIKey
-import org.ghrobotics.lib.mathematics.units.inch
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.SlopeNativeUnitModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
+import org.ghrobotics.lib.mathematics.units.nativeunit.wheelRadius
 import org.ghrobotics.lib.motors.FalconMotor
 import org.ghrobotics.lib.motors.ctre.FalconSRX
 import org.ghrobotics.lib.physics.MotorCharacterization
 import org.ghrobotics.lib.subsystems.drive.FalconWestCoastDrivetrain
 import org.ghrobotics.lib.utils.Source
 import org.ghrobotics.lib.utils.asSource
+//import com.team254.lib.physics.DifferentialDrive
+import org.ghrobotics.lib.mathematics.units.*
 import sun.security.util.Length
 
 object Drivetrain : FalconWestCoastDrivetrain() {
 
+
     // Constants are at the top of each subsystem.
     // These must be private.
+    private val kRobotMass = 140.lb
+    const val kRobotMomentOfInertia = 10.0
+    const val kRobotAngularDrag = 12.0
+    val kDriveSensorUnitsPerRotation = 1440.nativeUnits
+    private val kDriveNativeUnitModel = SlopeNativeUnitModel(138.inch, 10000.nativeUnits)
+    val kDriveWheelRadius = kDriveNativeUnitModel.wheelRadius(kDriveSensorUnitsPerRotation)
     private const val kLeftMasterId = 1
     private const val kLeftSlave1Id = 2
     private const val kRightMasterId = 3
     private const val kRightSlave1Id = 4
-    private val kDriveNativeUnitModel = SlopeNativeUnitModel(138.inch, 10000.nativeUnits)
+    private val kp = 0
+
+    /*
+    val kDriveModel = DifferentialDrive(
+            kRobotMass.value,
+            kRobotMomentOfInertia,
+            kRobotAngularDrag,
+            kDriveWheelRadius.value,
+            kDriveTrackWidth.value / 2.0,
+            kDriveLeftDCTransmission,
+            kDriveRightDCTransmission
+    ) */
 
 
     private const val kPigeonId = 17
@@ -81,6 +101,32 @@ object Drivetrain : FalconWestCoastDrivetrain() {
     private fun configureGearbox(masterId: Int, slaveId: Int, setInverted: Boolean): FalconMotor<Meter> {
         val masterMotor = FalconSRX(masterId, kDriveNativeUnitModel)
         val slaveMotor = FalconSRX(slaveId, kDriveNativeUnitModel)
+
+        slaveMotor.follow(masterMotor)
+        masterMotor.outputInverted = setInverted
+        slaveMotor.outputInverted = setInverted
+
+        masterMotor.feedbackSensor = FeedbackDevice.QuadEncoder
+
+        fun motorSettings(motor: FalconSRX<Meter>){
+            motor.talonSRX.configPeakOutputForward(1.0)
+            motor.talonSRX.configPeakOutputReverse(-1.0)
+            motor.talonSRX.configNominalOutputForward(0.0)
+            motor.talonSRX.configNominalOutputReverse(0.0)
+
+            motor.configCurrentLimit(true, FalconSRX.CurrentLimitConfig(
+                    80.amp,
+                    1.second,
+                    38.amp
+                )
+            )
+
+            motorSettings(masterMotor)
+            motorSettings(slaveMotor)
+
+        }
+        masterMotor.talonSRX.config_kP(0, kp.toDouble())
+
         return masterMotor
     }
 

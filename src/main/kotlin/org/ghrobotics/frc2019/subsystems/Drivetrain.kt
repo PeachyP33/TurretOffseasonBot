@@ -37,7 +37,7 @@ object Drivetrain : FalconWestCoastDrivetrain() {
     private const val kLeftSlave1Id = 2
     private const val kRightMasterId = 3
     private const val kRightSlave1Id = 4
-    private val kp = 0
+    private val kp = 3
 
     /*
     val kDriveModel = DifferentialDrive(
@@ -62,8 +62,8 @@ object Drivetrain : FalconWestCoastDrivetrain() {
     // Overriden variables
 
     // Motors
-    override val leftMotor: FalconMotor<Meter> = configureGearbox(kLeftMasterId, kLeftSlave1Id, setInverted = false)
-    override val rightMotor: FalconMotor<Meter> = configureGearbox(kRightMasterId, kRightSlave1Id, setInverted = true)
+    override val leftMotor: FalconSRX<Meter> = configureGearbox(kLeftMasterId, kLeftSlave1Id, setInverted = false)
+    override val rightMotor: FalconSRX<Meter> = configureGearbox(kRightMasterId, kRightSlave1Id, setInverted = true)
     private val leftSlave1: FalconMotor<Meter> = TODO()
     private val rightSlave1: FalconMotor<Meter> = TODO()
 
@@ -90,15 +90,20 @@ object Drivetrain : FalconWestCoastDrivetrain() {
 
     // Emergency management.
     override fun activateEmergency() {
-        TODO()
+        listOf(leftMotor, rightMotor).forEach{masterMotor ->
+            masterMotor.talonSRX.config_kP(0, 0.0)
+        }
+
     }
 
     override fun recoverFromEmergency() {
-        TODO()
+        listOf(leftMotor, rightMotor).forEach{masterMotor ->
+            masterMotor.talonSRX.config_kP(0, kp.toDouble())
+        }
     }
 
 
-    private fun configureGearbox(masterId: Int, slaveId: Int, setInverted: Boolean): FalconMotor<Meter> {
+    private fun configureGearbox(masterId: Int, slaveId: Int, setInverted: Boolean): FalconSRX<Meter> {
         val masterMotor = FalconSRX(masterId, kDriveNativeUnitModel)
         val slaveMotor = FalconSRX(slaveId, kDriveNativeUnitModel)
 

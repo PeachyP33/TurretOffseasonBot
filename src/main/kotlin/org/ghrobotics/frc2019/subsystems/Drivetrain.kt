@@ -39,6 +39,7 @@ object Drivetrain : FalconWestCoastDrivetrain() {
     private const val kRightSlave1Id = 4
     private val kp = 3
 
+    //val kDriveModel =
     /*
     val kDriveModel = DifferentialDrive(
             kRobotMass.value,
@@ -119,6 +120,8 @@ object Drivetrain : FalconWestCoastDrivetrain() {
             motor.talonSRX.configNominalOutputForward(0.0)
             motor.talonSRX.configNominalOutputReverse(0.0)
 
+            motor.brakeMode = true
+
             motor.configCurrentLimit(true, FalconSRX.CurrentLimitConfig(
                     80.amp,
                     1.second,
@@ -133,6 +136,16 @@ object Drivetrain : FalconWestCoastDrivetrain() {
         masterMotor.talonSRX.config_kP(0, kp.toDouble())
 
         return masterMotor
+    }
+
+    override fun periodic() {
+        periodicIO.leftVoltage = leftMotor.voltageOutput
+        periodicIO.rightVoltage = rightMotor.voltageOutput
+
+        periodicIO.leftCurrent = leftMotor.talonSRX.outputCurrent.amp
+        periodicIO.rightCurrent = rightMotor.talonSRX.outputCurrent.amp
+        
+
     }
 
 

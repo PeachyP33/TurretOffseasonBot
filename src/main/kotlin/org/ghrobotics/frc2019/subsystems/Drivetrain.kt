@@ -20,7 +20,9 @@ import org.ghrobotics.lib.utils.Source
 import org.ghrobotics.lib.utils.asSource
 //import com.team254.lib.physics.DifferentialDrive
 import org.ghrobotics.lib.mathematics.units.*
+import org.ghrobotics.lib.mathematics.units.derived.volts
 import sun.security.util.Length
+import kotlin.math.absoluteValue
 
 object Drivetrain : FalconWestCoastDrivetrain() {
 
@@ -38,6 +40,8 @@ object Drivetrain : FalconWestCoastDrivetrain() {
     private const val kRightMasterId = 3
     private const val kRightSlave1Id = 4
     private val kp = 3
+    private val volts = 0
+
 
     //val kDriveModel =
     /*
@@ -93,6 +97,7 @@ object Drivetrain : FalconWestCoastDrivetrain() {
     override fun activateEmergency() {
         listOf(leftMotor, rightMotor).forEach{masterMotor ->
             masterMotor.talonSRX.config_kP(0, 0.0)
+            masterMotor.setNeutral()
         }
 
     }
@@ -148,8 +153,10 @@ object Drivetrain : FalconWestCoastDrivetrain() {
 
     }
 
-    private fun zeroOutputs() {
-        //periodicIO.leftD
+    private fun outputs(motor: FalconMotor<Meter>) {
+        motor.setDutyCycle()
+        motor.setVelocity()
+        motor.setVoltage()
     }
 
 

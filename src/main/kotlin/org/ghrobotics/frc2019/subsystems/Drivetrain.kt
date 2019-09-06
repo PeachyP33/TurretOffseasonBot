@@ -144,8 +144,12 @@ object Drivetrain : FalconWestCoastDrivetrain() {
 
         periodicIO.leftCurrent = leftMotor.talonSRX.outputCurrent.amp
         periodicIO.rightCurrent = rightMotor.talonSRX.outputCurrent.amp
-        
 
+
+    }
+
+    private fun zeroOutputs() {
+        //periodicIO.leftD
     }
 
 
